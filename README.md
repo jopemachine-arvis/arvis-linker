@@ -12,7 +12,7 @@ $ npm i arvis-link
 
 ## Usage
 
-Add the `arvis-link` command as `postinstall` script of your Alfred package and add `arvis-unlink` as `preuninstall` script to clean up the resources when the workflow gets uninstalled.
+Add the `arvis-link` command as `postinstall` script of your Arvis extension package and add `arvis-unlink` as `preuninstall` script to clean up the resources when the extension gets uninstalled.
 
 ```json
 {
