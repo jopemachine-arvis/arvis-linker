@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { link } = require(".");
+import { linkArvisGlobalModule } from "./index";
 
 const npmGlobal = process.env.npm_config_global;
 
@@ -8,7 +8,7 @@ if (npmGlobal === "") {
   process.exit(0);
 }
 
-link().catch((error) => {
+linkArvisGlobalModule().catch((error: Error) => {
   console.error(error);
   process.exit(1);
 });
