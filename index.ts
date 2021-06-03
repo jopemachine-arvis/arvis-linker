@@ -7,24 +7,24 @@ import fse from "fs-extra";
 const envPaths = envPathsGenerator("arvis");
 import link from "./lib/link";
 import { checkFileExists } from "./lib/util";
-import execa from 'execa';
+import execa from "execa";
 
 // Prevent running as `sudo`
 sudoBlock();
 
 const linkArvisGlobalModule = async () => {
   const pkgResult = await readPkgUp();
-  if (!pkgResult) throw new Error('Error: package.json not found!');
+  if (!pkgResult) throw new Error("Error: package.json not found!");
   const packageName = pkgResult.pkg.name;
 
-  const src = `${globalDirectories.npm.packages}${path.sep}${packageName}`;
+  const src = path.resolve(globalDirectories.npm.packages, packageName);
 
   if (!fse.pathExistsSync(src)) {
     throw new Error(`Module not exists in global package, '${src}'`);
   }
 
-  const workflowJsonPath = `${src}${path.sep}arvis-workflow.json`;
-  const pluginJsonPath = `${src}${path.sep}arvis-plugin.json`;
+  const workflowJsonPath = path.resolve(src, "arvis-workflow.json");
+  const pluginJsonPath = path.resolve(src, "arvis-plugin.json");
 
   const isWorkflow = await checkFileExists(workflowJsonPath);
   const isPlugin = await checkFileExists(pluginJsonPath);
@@ -36,7 +36,7 @@ const linkArvisGlobalModule = async () => {
     }
 
     let config;
-    let type;
+    let type: string;
 
     if (isWorkflow) {
       type = "workflows";
@@ -46,10 +46,16 @@ const linkArvisGlobalModule = async () => {
       config = await fse.readJSON(pluginJsonPath);
     }
 
-    const { bundleId } = config;
-    const dest = `${envPaths.data}${path.sep}${type}${path.sep}${bundleId}`;
+    const { createdby, name } = config;
+    const bundleId = `@${createdby}.${name}`;
 
+    if (!createdby || !name || createdby === "" || name === "") {
+      throw new Error("It seems arvis extension json file is invalid");
+    }
+
+    const dest = path.resolve(envPaths.data, type!, bundleId);
     link(src, dest);
+
   } catch (err) {
     console.error("Not Arvis extension or config file format is invalid");
     process.exit(1);
@@ -57,8 +63,8 @@ const linkArvisGlobalModule = async () => {
 };
 
 const unlinkArvisGlobalModule = async () => {
-  const workflowDest = `${envPaths.data}${path.sep}${"workflows"}`;
-  const pluginDest = `${envPaths.data}${path.sep}${"plugins"}`;
+  const workflowDest = path.resolve(envPaths.data, "workflows");
+  const pluginDest = path.resolve(envPaths.data, "plugins");
 
   // Remove All broken symlinks
   execa.commandSync(
@@ -71,7 +77,4 @@ const unlinkArvisGlobalModule = async () => {
   );
 };
 
-export {
-  linkArvisGlobalModule,
-  unlinkArvisGlobalModule,
-};
+export { linkArvisGlobalModule, unlinkArvisGlobalModule };
