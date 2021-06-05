@@ -8,6 +8,7 @@ const envPaths = envPathsGenerator("arvis");
 import link from "./lib/link";
 import { checkFileExists } from "./lib/util";
 import execa from "execa";
+import { validate } from "@jopemachine/arvis-extension-validator";
 
 // Prevent running as `sudo`
 sudoBlock();
@@ -36,7 +37,7 @@ const linkArvisGlobalModule = async () => {
     }
 
     let config;
-    let type: string;
+    let type: "workflows" | "plugins";
 
     if (isWorkflow) {
       type = "workflows";
@@ -49,13 +50,18 @@ const linkArvisGlobalModule = async () => {
     const { createdby, name } = config;
     const bundleId = `@${createdby}.${name}`;
 
-    if (!createdby || !name || createdby === "" || name === "") {
+    const { errorMsg, valid: extensionValid } = validate(
+      config,
+      isWorkflow ? "workflow" : "plugin"
+    );
+
+    if (!extensionValid) {
+      console.error(errorMsg);
       throw new Error("It seems arvis extension json file is invalid");
     }
 
     const dest = path.resolve(envPaths.data, type!, bundleId);
     link(src, dest);
-
   } catch (err) {
     console.error("Not Arvis extension or config file format is invalid");
     process.exit(1);
