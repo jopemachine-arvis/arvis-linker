@@ -1,6 +1,6 @@
 {
   "name": "@jopemachine/arvis-link",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Make Arvis extensions installable from npm",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,8 @@
     "arvis",
     "arvish",
     "arvis-workflow",
-    "arvis-plugin"
+    "arvis-plugin",
+    "npm"
   ],
   "repository": {
     "type": "git",
@@ -34,7 +35,7 @@
   },
   "homepage": "https://github.com/jopemachine/arvish-link#readme",
   "dependencies": {
-    "@jopemachine/arvis-extension-validator": "0.0.2",
+    "@jopemachine/arvis-extension-validator": "^0.2.0",
     "del": "^6.0.0",
     "env-paths": "^2.2.1",
     "execa": "^5.0.1",

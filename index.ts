@@ -47,8 +47,8 @@ const linkArvisGlobalModule = async () => {
       config = await fse.readJSON(pluginJsonPath);
     }
 
-    const { createdby, name } = config;
-    const bundleId = `@${createdby}.${name}`;
+    const { creator, name } = config;
+    const bundleId = `${creator}.${name}`;
 
     const { errorMsg, valid: extensionValid } = validate(
       config,
