@@ -47,6 +47,11 @@ const linkArvisGlobalModule = async () => {
       config = await fse.readJSON(pluginJsonPath);
     }
 
+    if (config.platform && !config.platform.includes(process.platform)) {
+      console.error(`This extension does not supports '${process.platform}'!`);
+      process.exit(1);
+    }
+
     const { creator, name } = config;
     const bundleId = `${creator}.${name}`;
 
@@ -57,7 +62,7 @@ const linkArvisGlobalModule = async () => {
 
     if (!extensionValid) {
       console.error(errorMsg);
-      throw new Error("It seems arvis extension json file is invalid");
+      throw new Error("It seems arvis extension json format is invalid");
     }
 
     const dest = path.resolve(envPaths.data, type!, bundleId);
