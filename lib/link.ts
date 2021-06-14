@@ -1,8 +1,9 @@
 import fs from "fs";
-import pify from "pify";
 import del from "del";
 
-const fsP = pify(fs);
-
 export default (src: string, dest: string) =>
-  del(dest, { force: true }).then(() => fsP.symlink(src, dest));
+  del(dest, { force: true }).then(() =>
+    fs.symlink(src, dest, (err) => {
+      if (err) throw new Error(err.message);
+    })
+  );

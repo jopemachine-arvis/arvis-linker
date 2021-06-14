@@ -30,62 +30,58 @@ const linkArvisGlobalModule = async () => {
   const isWorkflow = await checkFileExists(workflowJsonPath);
   const isPlugin = await checkFileExists(pluginJsonPath);
 
-  try {
-    if (!isWorkflow && !isPlugin) {
-      console.error("This package seems to be not Arvis extension!");
-      process.exit(1);
-    }
-
-    let config;
-    let type: "workflows" | "plugins";
-
-    if (isWorkflow) {
-      type = "workflows";
-      config = await fse.readJSON(workflowJsonPath);
-    } else if (isPlugin) {
-      type = "plugins";
-      config = await fse.readJSON(pluginJsonPath);
-    }
-
-    if (config.platform && !config.platform.includes(process.platform)) {
-      console.error(`This extension does not supports '${process.platform}'!`);
-      process.exit(1);
-    }
-
-    const { creator, name } = config;
-    const bundleId = `${creator}.${name}`;
-
-    const { errorMsg, valid: extensionValid } = validate(
-      config,
-      isWorkflow ? "workflow" : "plugin"
-    );
-
-    if (!extensionValid) {
-      console.error(errorMsg);
-      throw new Error("It seems arvis extension json format is invalid");
-    }
-
-    const dest = path.resolve(envPaths.data, type!, bundleId);
-    link(src, dest);
-  } catch (err) {
-    console.error("Not Arvis extension or config file format is invalid");
-    process.exit(1);
+  if (!isWorkflow && !isPlugin) {
+    throw new Error("This package seems to be not Arvis extension!");
   }
+
+  let config;
+  let type: "workflows" | "plugins";
+
+  if (isWorkflow) {
+    type = "workflows";
+    config = await fse.readJSON(workflowJsonPath);
+  } else if (isPlugin) {
+    type = "plugins";
+    config = await fse.readJSON(pluginJsonPath);
+  }
+
+  if (config.platform && !config.platform.includes(process.platform)) {
+    throw new Error(`This extension does not supports '${process.platform}'!`);
+  }
+
+  const { creator, name } = config;
+  const bundleId = `${creator}.${name}`;
+
+  const { errorMsg, valid: extensionValid } = validate(
+    config,
+    isWorkflow ? "workflow" : "plugin"
+  );
+
+  if (!extensionValid) {
+    throw new Error(
+      `It seems arvis extension json format is invalid\n\n${errorMsg}`
+    );
+  }
+
+  const dest = path.resolve(envPaths.data, type!, bundleId);
+  link(src, dest);
 };
 
 const unlinkArvisGlobalModule = async () => {
   const workflowDest = path.resolve(envPaths.data, "workflows");
   const pluginDest = path.resolve(envPaths.data, "plugins");
 
-  // Remove All broken symlinks
-  execa.commandSync(
-    `find -L . -name . -o -type d -prune -o -type l -exec rm {} +`,
-    { cwd: workflowDest }
-  );
-  execa.commandSync(
-    `find -L . -name . -o -type d -prune -o -type l -exec rm {} +`,
-    { cwd: pluginDest }
-  );
+  if (process.platform !== "win32") {
+    // Remove All broken symlinks
+    execa.commandSync(
+      `find -L . -name . -o -type d -prune -o -type l -exec rm {} +`,
+      { cwd: workflowDest }
+    );
+    execa.commandSync(
+      `find -L . -name . -o -type d -prune -o -type l -exec rm {} +`,
+      { cwd: pluginDest }
+    );
+  }
 };
 
 export { linkArvisGlobalModule, unlinkArvisGlobalModule };
