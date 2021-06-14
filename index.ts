@@ -8,7 +8,7 @@ const envPaths = envPathsGenerator("arvis");
 import link from "./lib/link";
 import { checkFileExists } from "./lib/util";
 import execa from "execa";
-import { validate } from "@jopemachine/arvis-extension-validator";
+import { validate } from "arvis-extension-validator";
 
 // Prevent running as `sudo`
 sudoBlock();
