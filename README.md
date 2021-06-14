@@ -1,4 +1,4 @@
-# arvis-link
+# arvis-linker
 
 > Make your [Arvis](https://github.com/jopemachine/arvis) extensions installable from npm
 
@@ -7,7 +7,7 @@ This repository is inspired and cloned by [alfred-link](https://github.com/SamVe
 ## Install
 
 ```
-$ npm i arvis-link
+$ npm i arvis-linker
 ```
 
 ## Usage

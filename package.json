@@ -1,6 +1,6 @@
 {
-  "name": "arvis-link",
-  "version": "0.0.2",
+  "name": "arvis-linker",
+  "version": "0.0.1",
   "description": "Make Arvis extensions installable from npm",
   "main": "index.js",
   "scripts": {
@@ -26,14 +26,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jopemachine/arvish-link.git"
+    "url": "git+https://github.com/jopemachine/arvish-linker.git"
   },
   "author": "jopemachine",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jopemachine/arvish-link/issues"
+    "url": "https://github.com/jopemachine/arvish-linker/issues"
   },
-  "homepage": "https://github.com/jopemachine/arvish-link#readme",
+  "homepage": "https://github.com/jopemachine/arvish-linker#readme",
   "dependencies": {
     "arvis-extension-validator": "^0.0.1",
     "del": "^6.0.0",
