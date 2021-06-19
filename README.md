@@ -1,4 +1,5 @@
 # arvis-linker
+[![CodeFactor](https://www.codefactor.io/repository/github/jopemachine/arvis-linker/badge)](https://www.codefactor.io/repository/github/jopemachine/arvis-linker)
 [![NPM download total](https://img.shields.io/npm/dt/arvis-linker)](http://badge.fury.io/js/arvis-linker)
 [![NPM version](https://badge.fury.io/js/arvis-linker.svg)](http://badge.fury.io/js/arvis-linker)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
