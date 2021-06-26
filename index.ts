@@ -6,6 +6,7 @@ import envPathsGenerator from "env-paths";
 import fse from "fs-extra";
 const envPaths = envPathsGenerator("arvis");
 import link from "./lib/link";
+import { renewFilePath } from "./lib/path";
 import { checkFileExists } from "./lib/util";
 import execa from "execa";
 import { validate } from "arvis-extension-validator";
@@ -82,6 +83,8 @@ const unlinkArvisGlobalModule = async () => {
       { cwd: pluginDest }
     );
   }
+
+  fse.writeFileSync(renewFilePath, '');
 };
 
 export { linkArvisGlobalModule, unlinkArvisGlobalModule };
