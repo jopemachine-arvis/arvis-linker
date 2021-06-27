@@ -4,12 +4,13 @@ import path from "path";
 import readPkgUp from "read-pkg-up";
 import envPathsGenerator from "env-paths";
 import fse from "fs-extra";
-const envPaths = envPathsGenerator("arvis");
+import { validate } from "arvis-extension-validator";
 import link from "./lib/link";
 import { renewFilePath } from "./lib/path";
 import { checkFileExists } from "./lib/util";
-import execa from "execa";
-import { validate } from "arvis-extension-validator";
+import findUnvalidSymlink from './lib/findUnvalidSymlink';
+
+const envPaths = envPathsGenerator("arvis");
 
 // Prevent running as `sudo`
 sudoBlock();
@@ -72,16 +73,23 @@ const unlinkArvisGlobalModule = async () => {
   const workflowDest = path.resolve(envPaths.data, "workflows");
   const pluginDest = path.resolve(envPaths.data, "plugins");
 
-  if (process.platform !== "win32") {
-    // Remove All broken symlinks
-    execa.commandSync(
-      `find -L . -name . -o -type d -prune -o -type l -exec rm {} +`,
-      { cwd: workflowDest }
-    );
-    execa.commandSync(
-      `find -L . -name . -o -type d -prune -o -type l -exec rm {} +`,
-      { cwd: pluginDest }
-    );
+  const unvalidWorkflowSymlinks = await findUnvalidSymlink(workflowDest, 'workflow');
+  const unvalidPluginSymlinks = await findUnvalidSymlink(pluginDest, 'plugin');
+
+  await Promise.all([...unvalidWorkflowSymlinks, ...unvalidPluginSymlinks].map(async (invalidPath) => {
+    if (invalidPath) {
+      await fse.remove(invalidPath);
+    }
+  }));
+
+  if (unvalidWorkflowSymlinks.length > 0) {
+    console.log(`Following unvalidWorkflowSymlinks were removed.\n\n${unvalidWorkflowSymlinks.join('\n')}`);
+    console.log('\n');
+  }
+
+  if (unvalidPluginSymlinks.length > 0) {
+    console.log(`Following unvalidPluginSymlinks were removed.\n\n${unvalidPluginSymlinks.join('\n')}`);
+    console.log('\n');
   }
 
   fse.writeFileSync(renewFilePath, '');
