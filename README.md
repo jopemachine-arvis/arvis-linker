@@ -9,7 +9,7 @@
 
 > Make your [Arvis](https://github.com/jopemachine/arvis) extensions installable from npm
 
-This repository is inspired and cloned by [alfred-link](https://github.com/SamVerschueren/alfred-link/blob/master/readme.md)
+This lib is inspired and cloned from [alfred-link](https://github.com/SamVerschueren/alfred-link/blob/master/readme.md)
 
 ## Install
 
@@ -52,6 +52,8 @@ To remove the symlink afterwards, you can call `arvis-unlink`.
 ```
 $ npx arvis-unlink
 ```
+
+This command removes all broken symlinks in extension folder.
 
 ## Related
 
