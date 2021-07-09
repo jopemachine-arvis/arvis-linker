@@ -1,6 +1,6 @@
 {
   "name": "arvis-linker",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Make Arvis extensions installable from npm",
   "main": "index.js",
   "scripts": {
