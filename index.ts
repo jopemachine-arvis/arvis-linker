@@ -6,16 +6,17 @@ import envPathsGenerator from "env-paths";
 import fse from "fs-extra";
 import { validate } from "arvis-extension-validator";
 import link from "./lib/link";
-import { renewFilePath } from "./lib/path";
+import { arvisRenewExtensionFlagFilePath } from "./lib/path";
 import { checkFileExists } from "./lib/util";
 import findUnvalidSymlink from './lib/findUnvalidSymlink';
+import { getUserConfigs, applyUserConfigs } from './lib/userConfig';
 
 const envPaths = envPathsGenerator("arvis");
 
 // Prevent running as `sudo`
 sudoBlock();
 
-const linkArvisGlobalModule = async () => {
+const linkArvisGlobalModule = async (): Promise<void> => {
   const pkgResult = await readPkgUp();
   if (!pkgResult) throw new Error("Error: package.json not found!");
   const packageName = pkgResult.pkg.name;
@@ -36,16 +37,8 @@ const linkArvisGlobalModule = async () => {
     throw new Error("This package seems to be not Arvis extension!");
   }
 
-  let config;
-  let type: "workflows" | "plugins";
-
-  if (isWorkflow) {
-    type = "workflows";
-    config = await fse.readJSON(workflowJsonPath);
-  } else if (isPlugin) {
-    type = "plugins";
-    config = await fse.readJSON(pluginJsonPath);
-  }
+  const config = await fse.readJSON(isWorkflow ? workflowJsonPath : pluginJsonPath);
+  const type = isWorkflow ? "workflow" : "plugin";
 
   if (config.platform && !config.platform.includes(process.platform)) {
     throw new Error(`This extension does not supports '${process.platform}'!`);
@@ -56,7 +49,7 @@ const linkArvisGlobalModule = async () => {
 
   const { errorMsg, valid: extensionValid } = validate(
     config,
-    isWorkflow ? "workflow" : "plugin"
+    type
   );
 
   if (!extensionValid) {
@@ -65,8 +58,15 @@ const linkArvisGlobalModule = async () => {
     );
   }
 
-  const dest = path.resolve(envPaths.data, type!, bundleId);
-  link(src, dest);
+  const dest = path.resolve(envPaths.data, `${type}s`, bundleId);
+  await link(src, dest);
+
+  const migratedConfig = applyUserConfigs((await getUserConfigs())[bundleId], config);
+  await fse.writeJSON(path.resolve(dest, `arvis-${type}.json`), migratedConfig, { encoding: 'utf-8', spaces: 4 });
+
+  // To do:: Below logic needs to be removed after chokidar's symlink issue is resolved
+  // Because followSymlink is false now, below logic is needed for now.
+  fse.writeJSONSync(arvisRenewExtensionFlagFilePath, '');
 };
 
 const unlinkArvisGlobalModule = async () => {
@@ -92,7 +92,7 @@ const unlinkArvisGlobalModule = async () => {
     console.log('\n');
   }
 
-  fse.writeFileSync(renewFilePath, '');
+  fse.writeFileSync(arvisRenewExtensionFlagFilePath, '');
 };
 
 export { linkArvisGlobalModule, unlinkArvisGlobalModule };

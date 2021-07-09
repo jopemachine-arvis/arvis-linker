@@ -17,6 +17,14 @@ This lib is inspired and cloned from [alfred-link](https://github.com/SamVerschu
 $ npm i arvis-linker
 ```
 
+## Hot it works
+
+`arvis-linker` creates symlink pointing global node_modules folder's extension directory.
+
+and also if there is user config of that extension, apply user config.
+
+and when `uninstall` the extension, remove all broken symlinks.
+
 ## Usage
 
 Add the `arvis-link` command as `postinstall` script of your Arvis extension package and add `arvis-unlink` as `preuninstall` script to clean up the resources when the extension gets uninstalled.

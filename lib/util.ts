@@ -1,8 +1,8 @@
-import fs from 'fs';
+import fse from 'fs-extra';
 
 export async function checkFileExists(file: string): Promise<boolean> {
-  return fs.promises
-    .access(file, fs.constants.F_OK)
+  return fse.promises
+    .access(file, fse.constants.F_OK)
     .then(() => true)
     .catch(() => false);
 }
