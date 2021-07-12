@@ -7,10 +7,12 @@ import { userConfigPath } from './path';
 export const applyUserConfigs = (userConfig: any, extensionInfo: any) => {
   const result = { ...extensionInfo };
 
-  // Migrate previous variables
-  if (userConfig.variables) {
-    for (const variable of Object.keys(userConfig.variables)) {
-      result.variables[variable] = userConfig.variables[variable];
+  if (extensionInfo.variables) {
+    // Migrate previous variables
+    if (userConfig && userConfig.variables) {
+      for (const variable of Object.keys(userConfig.variables)) {
+        result.variables![variable] = userConfig.variables[variable];
+      }
     }
   }
 
