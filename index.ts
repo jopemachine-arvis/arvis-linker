@@ -10,6 +10,7 @@ import { arvisRenewExtensionFlagFilePath } from "./lib/path";
 import { checkFileExists } from "./lib/util";
 import findUnvalidSymlink from './lib/findUnvalidSymlink';
 import { getUserConfigs, applyUserConfigs } from './lib/userConfig';
+import { forceReload } from './lib/extensionReload';
 
 const envPaths = envPathsGenerator("arvis");
 
@@ -41,7 +42,7 @@ const linkArvisGlobalModule = async (): Promise<void> => {
   const type = isWorkflow ? "workflow" : "plugin";
 
   if (config.platform && !config.platform.includes(process.platform)) {
-    throw new Error(`This extension does not supports '${process.platform}'!`);
+    throw new Error(`This extension does not supports '${process.platform}'!\nCheck the extension info on '${config.webAddress}'.`);
   }
 
   const { creator, name } = config;
@@ -54,7 +55,7 @@ const linkArvisGlobalModule = async (): Promise<void> => {
 
   if (!extensionValid) {
     throw new Error(
-      `It seems arvis extension json format is invalid\n\n${errorMsg}`
+      `It seems arvis extension json format is invalid.\n\n${errorMsg}`
     );
   }
 
@@ -66,7 +67,7 @@ const linkArvisGlobalModule = async (): Promise<void> => {
 
   // To do:: Below logic needs to be removed after chokidar's symlink issue is resolved
   // Because followSymlink is false now, below logic is needed for now.
-  fse.writeJSONSync(arvisRenewExtensionFlagFilePath, '');
+  await forceReload(bundleId, type);
 };
 
 const unlinkArvisGlobalModule = async () => {
