@@ -4,7 +4,7 @@ import { userConfigPath } from './path';
 /**
  * @description Migrate previous extenion's setting
  */
-export const applyUserConfigs = (userConfig: any, extensionInfo: any) => {
+export const applyUserConfigs = (userConfig: any | undefined, extensionInfo: any) => {
   const result = { ...extensionInfo };
 
   if (extensionInfo.variables) {
