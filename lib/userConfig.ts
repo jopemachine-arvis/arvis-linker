@@ -1,5 +1,5 @@
-import fse from 'fs-extra';
 import { userConfigPath } from './path';
+import { readJson5 } from './readJson5';
 
 /**
  * @description Migrate previous extenion's setting
@@ -21,7 +21,7 @@ export const applyUserConfigs = (userConfig: any | undefined, extensionInfo: any
 
 export const getUserConfigs = async () => {
   try {
-    return await fse.readJSON(userConfigPath);
+    return await readJson5(userConfigPath) as any;
   } catch (err) {
     return {};
   }

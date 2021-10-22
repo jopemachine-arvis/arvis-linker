@@ -8,6 +8,7 @@ import { validate } from 'arvis-extension-validator';
 import pathExists from 'path-exists';
 import isAdmin from 'is-admin';
 import link from './lib/link';
+import { readJson5 } from './lib/readJson5';
 import { arvisRenewExtensionFlagFilePath } from './lib/path';
 import findUnvalidSymlink from './lib/findUnvalidSymlink';
 import { getUserConfigs, applyUserConfigs } from './lib/userConfig';
@@ -44,7 +45,7 @@ const linkArvisGlobalModule = async (): Promise<void> => {
     throw new Error('This package seems to be not Arvis extension!');
   }
 
-  const config = await fse.readJSON(isWorkflow ? workflowJsonPath : pluginJsonPath);
+  const config = await readJson5(isWorkflow ? workflowJsonPath : pluginJsonPath) as any;
   const type = isWorkflow ? 'workflow' : 'plugin';
 
   if (config.platform && !config.platform.includes(process.platform)) {
